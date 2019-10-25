@@ -1,5 +1,5 @@
 #include <IRremote.h>
-const int RECV_PIN = 4;
+const int RECV_PIN = 11;
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 IRsend irsend;
@@ -17,9 +17,10 @@ void setup() {
 
 }
 
-void rSignal(){ 
+boolean rSignal(){ 
   unsigned long starttime = millis();
   unsigned long endtime = starttime;
+  boolean signal = false; 
   while ((endtime - starttime)<=1000){
     if (irrecv.decode(&results)){
         if (results.decode_type == NEC) {
@@ -37,15 +38,16 @@ void rSignal(){
         else if (results.decode_type == UNKNOWN) {
           Serial.print("UNKNOWN: ");
         }
-        Serial.println("detected!"); 
-    irrecv.resume();
-    Serial.println(results.value);
-    }   
-  //loopcount = loopcount+1;
-  endtime = millis();
+        Serial.println("detected!");
+        signal = true; 
+        irrecv.resume();
+        Serial.println(results.value);   
+   }
+   endtime = millis();
   }
-  //serial.print (loopcount,DEC);
+  return signal;
 }
+
 void loop(){
   // sending beacon signal 
   // should only do this if it receives input from remote 
@@ -53,7 +55,7 @@ void loop(){
       {
          value = Serial.read();
       }
-   //power 
+   //power sony
    if (value == 48){ 
       //digitalWrite (led, HIGH);
       for (int i = 0; i < 3; i++){ 
@@ -62,38 +64,75 @@ void loop(){
       }
      
    }
-   //volume up 
+   //volume up sony
    else if (value == 49){ 
       for (int i = 0; i < 3; i++){ 
         irsend.sendSony(0x490, 12); 
         delay(40); 
       }
    }
-   // volume down
+   // volume down sony 
    else if (value == 50){ 
       for (int i = 0; i < 3; i++){ 
         irsend.sendSony(0xC90, 12); 
         delay(40); 
       }
    }
-   // channel up 
+   // channel up sony
    else if (value == 51){ 
       for (int i = 0; i < 3; i++){ 
         irsend.sendSony(0x90, 12); 
         delay(40); 
       }
    } 
-   // channel down 
+   // channel down sony  
    else if (value == 52){ 
       for (int i = 0; i < 3; i++){ 
         irsend.sendSony(0x890, 12); 
         delay(40); 
       }
    }
+   // speaker power 
+   else if (value == 53){ 
+     for (int i = 0; i < 3; i++){
+      irsend.sendNEC(0x9B28B649, 32);
+      delay;
+     } 
+   }
+   // speaker vol up 
+   else if (value == 54){ 
+     for (int i = 0; i < 3; i++){
+      irsend.sendNEC(0x9B28F20D, 32);
+      delay;
+     } 
+   }  
+   // speaker vol down 
+   else if (value == 55){ 
+     for (int i = 0; i < 3; i++){
+      irsend.sendNEC(0x9B280AF5, 32);
+      delay;
+     } 
+   }  
+   // speaker next 
+   else if (value == 56){ 
+     for (int i = 0; i < 3; i++){
+      irsend.sendNEC(0x9B28A857, 32);
+      delay;
+     } 
+   }
+   // speaker prev 
+   else if (value == 57){ 
+     for (int i = 0; i < 3; i++){
+      irsend.sendNEC(0x9B286897, 32);
+      delay;
+     } 
+   }   
    
   value = 0; 
   //delay(1000); 
   irrecv.enableIRIn();
   irrecv.resume();
-  rSignal(); 
+  boolean signal_received =  rSignal(); 
+  Serial.println(signal_received);   
+  
 }  
