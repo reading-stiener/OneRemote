@@ -43,7 +43,7 @@ void rSignal(){
 void loop(){
   // sending beacon signal
   for (int i = 0; i < 3; i++){
-    irsend.sendSony(0x68B92, 12);
+    irsend.sendNEC(0x9B286897, 32);
     delay(40);   
   }   
   

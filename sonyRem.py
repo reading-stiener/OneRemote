@@ -44,7 +44,15 @@ class sony:
         self.channel_down.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
 
-    
+    def sense(self, msg):
+        if 'sony' not in msg:
+            #self.master.destroy()
+            print("sony not in msg")
+        else:
+            print("sony in msg") 
+        msg = Arduino_Serial.readline().decode('utf-8').lower()    
+        self.master.after(1, lambda: self.sense(msg)) 
+        
     def power(self):
         Arduino_Serial.write('0'.encode())             #send 1 to arduino
 

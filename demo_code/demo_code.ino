@@ -39,13 +39,17 @@ boolean rSignal(){
           Serial.print("UNKNOWN: ");
         }
         Serial.println("detected!");
-        signal = true; 
         irrecv.resume();
-        Serial.println(results.value);   
+        signal = true;
+        //-Serial.println(results.value);   
    }
+   //else{ 
+   //  Serial.println("nothing detected"); 
+   //} 
+   
    endtime = millis();
   }
-  return signal;
+  return signal; 
 }
 
 void loop(){
@@ -132,7 +136,10 @@ void loop(){
   //delay(1000); 
   irrecv.enableIRIn();
   irrecv.resume();
-  boolean signal_received =  rSignal(); 
-  Serial.println(signal_received);   
+  boolean signal = rSignal(); 
+  if (signal == 0){
+    Serial.println("nothing detected");
+  } 
+  
   
 }  
