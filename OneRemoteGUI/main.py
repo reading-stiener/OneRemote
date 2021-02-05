@@ -1,44 +1,34 @@
 import tkinter as tk
-from customWidgets import *
+from frames import *
+import time
 
-class Application(tk.Frame):
+class ORApp(tk.Tk):
 
-    width = 200
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self.geometry("200x500")
+        self.tk_setPalette(background='black', foreground='white',
+                           activeBackground='black', activeForeground='gray')
+        self.resizable(0, 0)
+        self._frame = None
+        self.switch_frame(Options)
+        self.currentStatus = ""
+        self.lastTime = time.time()
 
-    def __init__(self, master=None):
-        super().__init__(master, bg='black')
-        self.master = master
-        self.pack()
-        self.create_widgets()
+    def switch_frame(self, new_frame, remoteName=None):
+        """Destroys current frame and replaces it with a new one."""
+        if remoteName is not None:
+            new_frame = new_frame(master=self, name=remoteName)
+        else:
+            new_frame = new_frame(master=self)
+        if self._frame is not None:
+            self._frame.destroy()
+        self._frame = new_frame
+        self._frame.pack()
 
-    def create_widgets(self):
-
-        self.title = tk.Label(self, text="Roku")
-        self.title.config(font=("Verdana", 18))
-        self.title.place(x=self.width/2-(32), y=5)
-
-        self.buttonL = RemoteButton(self, imgPath="./images/home.png")
-        self.buttonL.place(x=5, y=5)
-
-        self.buttonR = RemoteButton(self, imgPath="./images/power.png")
-        self.buttonR.place(x=self.width-35, y=6)
-
-        self.track = Trackpad(self, 190, 180)
-        self.track.place(x=5, y=40)
-
-        self.slider1 = Slider(self, 190, 120, labels=["MENU", "GUIDE", "INFO"])
-        self.slider1.place(x=5, y=230)
-
-        self.slider2 = Slider(self, 190, 120, labels=["DOWN", "VOL", "UP"])
-        self.slider2.place(x=5, y=360)
+    def remCom(self, code):
+        print("outputting ", code)
 
 
-root = tk.Tk()
-root.geometry("200x500")
-root.tk_setPalette(background='black', foreground='white',
-               activeBackground='black', activeForeground='gray')
-root.resizable(0, 0)
-app = Application(master=root)
-app.pack_propagate(0)
-app.pack(fill=tk.BOTH, expand=1)
+app = ORApp()
 app.mainloop()
